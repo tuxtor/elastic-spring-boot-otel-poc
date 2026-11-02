@@ -1,0 +1,3 @@
+###
+GET {{base}}/trace-demo
+Accept: application/json

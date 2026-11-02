@@ -1,0 +1,19 @@
+@startuml
+!theme blueprint
+
+interface HTTP
+component "Spring Boot" <<OpenTelemetry>> as springBoot
+component "Spring Boot Client" <<OpenTelemetry>> as springBootClient
+cloud "Elastic Cloud\nManaged OTLP Endpoint" as elastic
+component "Elastic Observability" as kibana
+
+database "H2 Database" as books <<RDBMS>>
+
+HTTP .right. springBootClient
+springBoot -down-> books : jdbc
+springBootClient <-right-> springBoot : REST (Feign +\ntraceparent header)
+
+springBoot -down-> elastic : OTLP (direct,\nOTEL_EXPORTER_OTLP_*)
+springBootClient -down-> elastic : OTLP (direct,\nOTEL_EXPORTER_OTLP_*)
+kibana <-up-> elastic : traces, metrics, logs
+@enduml
